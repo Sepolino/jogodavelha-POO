@@ -1,23 +1,25 @@
 """Model da partida, independente da interface grafica."""
 
 from src.core import Jogador
-from src.jogos import JogoDaVelha
+from src.jogos import JogoDaVelha, JogoDamas
 
 
 class GameModel:
     """
     Model do MVC.
 
-    Encapsula a logica do JogoDaVelha e expoe apenas metodos publicos para o
+    Encapsula a partida atual e expõe apenas métodos públicos para o
     Controller. A View nunca acessa diretamente este objeto.
     """
 
     def __init__(self) -> None:
         self._player_names = ["Jogador 1", "Jogador 2"]
-        self._game: JogoDaVelha | None = None
+        self._game_mode = "velha"
+        self._game: JogoDaVelha | JogoDamas | None = None
+        self._selected_origin: tuple[int, int] | None = None
 
     def configure_players(self, names: list[str]) -> None:
-        """Configura os nomes dos jogadores da proxima partida."""
+        """Configura os nomes dos jogadores da próxima partida."""
         cleaned_names = [
             name.strip() or f"Jogador {index + 1}"
             for index, name in enumerate(names[:2])
@@ -26,17 +28,76 @@ class GameModel:
             cleaned_names.append(f"Jogador {len(cleaned_names) + 1}")
         self._player_names = cleaned_names
 
+    def configure_game_mode(self, game_mode: str) -> None:
+        """Configura o modo de jogo a ser usado na próxima partida."""
+        self._game_mode = "damas" if game_mode == "damas" else "velha"
+        self._selected_origin = None
+
     def start_new_match(self) -> None:
         """Cria e inicia uma nova partida mantendo os jogadores configurados."""
-        player_one = Jogador(self._player_names[0], "X")
-        player_two = Jogador(self._player_names[1], "O")
-        self._game = JogoDaVelha(player_one, player_two)
+        if self._game_mode == "damas":
+            player_one = Jogador(self._player_names[0], "B")
+            player_two = Jogador(self._player_names[1], "P")
+            self._game = JogoDamas(player_one, player_two)
+        else:
+            player_one = Jogador(self._player_names[0], "X")
+            player_two = Jogador(self._player_names[1], "O")
+            self._game = JogoDaVelha(player_one, player_two)
+
+        self._selected_origin = None
         self._game.iniciar()
 
-    def play_turn(self, row: int, column: int) -> bool:
-        """Executa a jogada do jogador atual na posicao informada."""
+    def play_turn(
+        self,
+        row: int,
+        column: int,
+        row_origin: int | None = None,
+        column_origin: int | None = None,
+    ) -> bool:
+        """Executa a jogada do jogador atual na posição informada."""
         self._ensure_game()
+
+        if self._game_mode == "damas":
+            if row_origin is not None and column_origin is not None:
+                return self._game.realizar_jogada_posicao(
+                    row,
+                    column,
+                    row_origin,
+                    column_origin,
+                )
+            if self._selected_origin is None:
+                if not self._game.is_valid_origin(row, column):
+                    return False
+                self._selected_origin = (row, column)
+                return True
+            origin_row, origin_column = self._selected_origin
+            self._selected_origin = None
+            return self._game.realizar_jogada_posicao(
+                row,
+                column,
+                origin_row,
+                origin_column,
+            )
+
         return self._game.realizar_jogada_posicao(row, column)
+
+    def clear_selected_origin(self) -> None:
+        self._selected_origin = None
+
+    def is_game_mode_damas(self) -> bool:
+        """Retorna True se o jogo atual for Damas."""
+        return self._game_mode == "damas"
+
+    def get_selected_origin_text(self) -> str:
+        if self._selected_origin is None:
+            return ""
+        return f"Origem: {self._selected_origin}"
+
+    def is_valid_origin(self, row: int, column: int) -> bool:
+        """Verifica se a posição selecionada é uma peça válida do jogador atual."""
+        if self._game_mode != "damas":
+            return False
+        return self._game.is_valid_origin(row, column)
 
     def get_board(self) -> list[list[str]]:
         """Retorna o estado atual do tabuleiro."""

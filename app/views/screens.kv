@@ -6,7 +6,7 @@
         orientation: "vertical"
 
         MDTopAppBar:
-            title: "Jogo da Velha MVC"
+            title: "Selecione um jogo"
             elevation: 4
             left_action_items: [["gamepad-variant", lambda x: None]]
 
@@ -25,28 +25,132 @@
                 text_color: app.theme_cls.primary_color
 
             MDLabel:
-                text: "Jogo da Velha"
+                text: "Jogo de Tabuleiro"
                 halign: "center"
                 font_style: "H3"
                 size_hint_y: None
                 height: self.texture_size[1]
+
+            MDLabel:
+                text: "Escolha um jogo para começar"
+                halign: "center"
+                font_style: "Subtitle1"
+                size_hint_y: None
+                height: self.texture_size[1]
+
+            MDGridLayout:
+                cols: 2
+                spacing: dp(12)
+                size_hint_y: None
+                height: dp(260)
+
+                MDCard:
+                    size_hint_y: None
+                    height: dp(260)
+                    padding: dp(16)
+                    spacing: dp(14)
+                    radius: [16, 16, 16, 16]
+                    elevation: 3
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        spacing: dp(12)
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: dp(8)
+
+                        MDIcon:
+                            icon: "close-thick"
+                            halign: "center"
+                            size_hint: 1, None
+                            height: dp(56)
+                            pos_hint: {"center_x": 0.5}
+                            font_size: "48sp"
+                            theme_text_color: "Custom"
+                            text_color: app.theme_cls.primary_color
+
+                        MDLabel:
+                            text: "Jogo da Velha"
+                            halign: "center"
+                            font_style: "H6"
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        MDLabel:
+                            text: "Tradição rápida e tática"
+                            halign: "center"
+                            font_style: "Caption"
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        Widget:
+
+                        MDRaisedButton:
+                            text: "Selecionar"
+                            size_hint_x: 1
+                            on_release:
+                                root.controller.select_game_mode('velha')
+                                root.controller.show_config()
+
+                MDCard:
+                    size_hint_y: None
+                    height: dp(260)
+                    padding: dp(16)
+                    spacing: dp(14)
+                    radius: [16, 16, 16, 16]
+                    elevation: 3
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        spacing: dp(12)
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: dp(8)
+
+                        MDIcon:
+                            icon: "chess-king"
+                            halign: "center"
+                            size_hint: 1, None
+                            height: dp(56)
+                            pos_hint: {"center_x": 0.5}
+                            font_size: "48sp"
+                            theme_text_color: "Custom"
+                            text_color: app.theme_cls.primary_color
+
+                        MDLabel:
+                            text: "Damas"
+                            halign: "center"
+                            font_style: "H6"
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        MDLabel:
+                            text: "Capture e avance com estratégia"
+                            halign: "center"
+                            font_style: "Caption"
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        Widget:
+
+                        MDRaisedButton:
+                            text: "Selecionar"
+                            size_hint_x: 1
+                            on_release:
+                                root.controller.select_game_mode('damas')
+                                root.controller.show_config()
 
             MDCard:
                 orientation: "vertical"
                 padding: dp(16)
                 spacing: dp(12)
                 size_hint: (1, None)
-                height: dp(190)
-                radius: [8, 8, 8, 8]
+                height: dp(120)
+                radius: [12, 12, 12, 12]
                 elevation: 2
 
                 MDRaisedButton:
-                    text: "Nova Partida"
-                    size_hint_x: 1
-                    on_release: root.controller.show_config()
-
-                MDRaisedButton:
-                    text: "Configuracoes"
+                    text: "Configurações"
                     size_hint_x: 1
                     on_release: root.open_settings()
 
@@ -76,7 +180,7 @@
                 padding: dp(16)
                 spacing: dp(14)
                 size_hint: (1, None)
-                height: dp(270)
+                height: dp(330)
                 radius: [8, 8, 8, 8]
                 elevation: 2
 
@@ -90,15 +194,29 @@
                     id: player_one
                     hint_text: "Nome do Jogador 1"
                     text: "Jogador 1"
-                    helper_text: "Simbolo X"
+                    helper_text: "Simbolo X / B"
                     helper_text_mode: "persistent"
 
                 MDTextField:
                     id: player_two
                     hint_text: "Nome do Jogador 2"
                     text: "Jogador 2"
-                    helper_text: "Simbolo O"
+                    helper_text: "Simbolo O / P"
                     helper_text_mode: "persistent"
+
+                MDLabel:
+                    id: mode_label
+                    text: "Modo selecionado: Jogo da Velha"
+                    font_style: "Body1"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+
+                MDLabel:
+                    text: "Preencha os nomes e inicie a partida no modo selecionado."
+                    font_style: "Caption"
+                    theme_text_color: "Secondary"
+                    size_hint_y: None
+                    height: self.texture_size[1]
 
                 MDRaisedButton:
                     text: "Iniciar Partida"

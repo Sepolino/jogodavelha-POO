@@ -38,10 +38,16 @@ class GameController:
         self._screen_manager.current = "board"
         self.current_screen.refresh()
 
-    def play_cell(self, row: int, column: int) -> bool:
+    def play_cell(
+        self,
+        row: int,
+        column: int,
+        origin_row: int | None = None,
+        origin_column: int | None = None,
+    ) -> bool:
         """Tenta executar uma jogada e atualiza a interface."""
         try:
-            accepted = self._model.play_turn(row, column)
+            accepted = self._model.play_turn(row, column, origin_row, origin_column)
         except RuntimeError as error:
             self.current_screen.show_error(str(error))
             return False
@@ -54,8 +60,18 @@ class GameController:
             result_screen.refresh()
             self._screen_manager.current = "result"
         elif not accepted:
-            board_screen.show_error("Jogada invalida. Escolha uma casa vazia.")
+            board_screen.show_error("Jogada inválida. Selecione origem e destino corretos.")
         return accepted
+
+    def select_game_mode(self, game_mode: str) -> None:
+        """Seleciona o modo de jogo para a próxima partida."""
+        self._model.configure_game_mode(game_mode)
+
+    def is_damas_mode(self) -> bool:
+        return self._model.is_game_mode_damas()
+
+    def get_selected_origin_text(self) -> str:
+        return self._model.get_selected_origin_text()
 
     def get_board(self) -> list[list[str]]:
         """Retorna o tabuleiro da partida."""

@@ -21,7 +21,7 @@ class BoardGameApp(MDApp):
 
     def build(self) -> ScreenManager:
         """Constroi o gerenciador de telas e configura o tema Material."""
-        self.title = "Jogo da Velha MVC"
+        self.title = "Jogos de Tabuleiro MVC"
         self.theme_cls.primary_palette = "Teal"
         self.theme_cls.accent_palette = "Amber"
         self.theme_cls.theme_style = "Light"
